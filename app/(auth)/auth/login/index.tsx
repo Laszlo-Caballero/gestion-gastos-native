@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Lucied from "@react-native-vector-icons/lucide";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../../../../components/ui/input/Input";
