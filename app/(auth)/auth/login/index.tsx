@@ -13,6 +13,8 @@ import {
   LoginSchemaType,
 } from "../../../../schema/auth/login.schema";
 import { useAuth } from "../../../../context/AuthContext";
+import Load from "../../../../components/shared/loader/Load";
+import { useMutation } from "../../../../hooks/useMutation";
 
 export default function index() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,9 +28,11 @@ export default function index() {
   });
   const { login } = useAuth();
 
-  const onSubmit = (data: LoginSchemaType) => {
-    login(data);
-  };
+  const { mutate, isLoading } = useMutation<void, LoginSchemaType>({
+    mutationFn: async (data: LoginSchemaType) => {
+      return login(data);
+    },
+  });
 
   return (
     <SafeAreaView className="flex-1 flex gap-y-4 justify-center bg-g-green-3">
@@ -72,7 +76,7 @@ export default function index() {
           <Link href="/(auth)/auth/register" className="font-semibold">
             ¿No tienes una cuenta? Regístrate
           </Link>
-          <Pressable onPress={handleSubmit(onSubmit)}>
+          <Pressable onPress={handleSubmit(mutate)}>
             <Text className="text-center text-white bg-g-green-2 py-3 rounded-lg font-semibold">
               Iniciar sesión
             </Text>
@@ -87,6 +91,8 @@ export default function index() {
           </Link>
         </View>
       </KeyboardAwareScrollView>
+
+      <Load visible={isLoading} />
     </SafeAreaView>
   );
 }
