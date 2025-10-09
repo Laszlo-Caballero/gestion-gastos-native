@@ -2,19 +2,16 @@ import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Lucied from "@react-native-vector-icons/lucide";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Input from "../../../../components/ui/input/Input";
+import Input from "@/components/ui/input/Input";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import { Link } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  loginSchema,
-  LoginSchemaType,
-} from "../../../../schema/auth/login.schema";
-import { useAuth } from "../../../../context/AuthContext";
-import Load from "../../../../components/shared/loader/Load";
-import { useMutation } from "../../../../hooks/useMutation";
+import { loginSchema, LoginSchemaType } from "@/schema/auth/login.schema";
+import { useAuth } from "@/context/AuthContext";
+import Load from "@/components/shared/loader/Load";
+import { useMutation } from "@/hooks/useMutation";
 
 export default function index() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,13 +23,7 @@ export default function index() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
-  const { login } = useAuth();
-
-  const { mutate, isLoading } = useMutation<void, LoginSchemaType>({
-    mutationFn: async (data: LoginSchemaType) => {
-      return login(data);
-    },
-  });
+  const { login, isLoadingLogin } = useAuth();
 
   return (
     <SafeAreaView className="flex-1 flex gap-y-4 justify-center bg-g-green-3">
@@ -52,12 +43,12 @@ export default function index() {
 
         <View className="w-full border border-g-gray-2 p-[17px] bg-white rounded-xl gap-y-3">
           <Input
-            label="Correo electrónico"
-            placeholder="Ingresa tu correo electrónico"
+            label="Username"
+            placeholder="Ingresa tu nombre de usuario"
             icon={<MaterialDesignIcons name="email-outline" />}
-            value={watch("email")}
-            onChangeText={(text) => setValue("email", text)}
-            error={errors.email?.message}
+            value={watch("username")}
+            onChangeText={(text) => setValue("username", text)}
+            error={errors.username?.message}
           />
 
           <Input
@@ -76,7 +67,7 @@ export default function index() {
           <Link href="/(auth)/auth/register" className="font-semibold">
             ¿No tienes una cuenta? Regístrate
           </Link>
-          <Pressable onPress={handleSubmit(mutate)}>
+          <Pressable onPress={handleSubmit(login)}>
             <Text className="text-center text-white bg-g-green-2 py-3 rounded-lg font-semibold">
               Iniciar sesión
             </Text>
@@ -92,7 +83,7 @@ export default function index() {
         </View>
       </KeyboardAwareScrollView>
 
-      <Load visible={isLoading} />
+      <Load visible={isLoadingLogin} />
     </SafeAreaView>
   );
 }

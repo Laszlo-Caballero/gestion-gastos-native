@@ -27,8 +27,6 @@
       "favicon": "./assets/favicon.png"
     },
     "scheme": "gestion-gastos",
-    "plugins": [
-      "expo-router"
-    ]
+    "plugins": ["expo-router"]
   }
 }

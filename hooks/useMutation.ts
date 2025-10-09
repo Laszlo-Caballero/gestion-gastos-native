@@ -2,8 +2,8 @@ import { useState } from "react";
 
 interface MutationProps<T, K> {
   mutationFn: (data: K) => Promise<T>;
-  onSuccess?: () => void;
-  onError?: () => void;
+  onSuccess?: (data: T) => void;
+  onError?: (error: any) => void;
 }
 
 export function useMutation<T, K>({
@@ -23,10 +23,10 @@ export function useMutation<T, K>({
     try {
       const data = await mutationFn(props as K);
       setFetch({ isLoading: false, data, isError: false, error: "" });
-      onSuccess?.();
-    } catch (error: unknown) {
+      onSuccess?.(data);
+    } catch (error) {
       setFetch({ isLoading: false, isError: true, error: String(error) });
-      onError?.();
+      onError?.(error);
     }
   };
 

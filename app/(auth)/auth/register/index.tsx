@@ -3,13 +3,32 @@ import { Pressable, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Lucied from "@react-native-vector-icons/lucide";
-import Input from "../../../../components/ui/input/Input";
+import Input from "@/components/ui/input/Input";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import { Link } from "expo-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  registerSchema,
+  RegisterSchemaType,
+} from "@/schema/auth/register.schema";
+import axios from "axios";
+import Load from "@/components/shared/loader/Load";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterPage() {
   const [showpassword, setShowPassword] = useState(false);
   const [showconfirmPassword, setShowconfirmPassword] = useState(false);
+  const {
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const { register, isLoadingRegister } = useAuth();
 
   return (
     <SafeAreaView className="flex-1 flex gap-y-4 justify-center bg-g-green-3">
@@ -29,14 +48,20 @@ export default function RegisterPage() {
 
         <View className="w-full border border-g-gray-2 p-[17px] bg-white rounded-xl gap-y-3">
           <Input
-            label="Nombre completo"
-            placeholder="Tu nombre"
+            label="Username"
+            placeholder="Ingresa tu nombre de usuario"
             icon={<Lucied name="user" size={20} />}
+            error={errors.username?.message}
+            value={watch("username")}
+            onChangeText={(text) => setValue("username", text)}
           />
           <Input
             label="Correo electrónico"
             placeholder="Ingresa tu correo electrónico"
             icon={<MaterialDesignIcons name="email-outline" />}
+            error={errors.email?.message}
+            onChangeText={(text) => setValue("email", text)}
+            value={watch("email")}
           />
           <Input
             label="Contraseña"
@@ -46,6 +71,9 @@ export default function RegisterPage() {
               showpassword ? <Lucied name="eye-off" /> : <Lucied name="eye" />
             }
             onPressIcon={() => setShowPassword(!showpassword)}
+            error={errors.password?.message}
+            value={watch("password")}
+            onChangeText={(text) => setValue("password", text)}
           />
 
           <Input
@@ -60,9 +88,12 @@ export default function RegisterPage() {
               )
             }
             onPressIcon={() => setShowconfirmPassword(!showconfirmPassword)}
+            error={errors.confirmPassword?.message}
+            value={watch("confirmPassword")}
+            onChangeText={(text) => setValue("confirmPassword", text)}
           />
 
-          <Pressable>
+          <Pressable onPress={handleSubmit(register)}>
             <Text className="text-center text-white bg-g-green-2 py-3 rounded-lg font-semibold">
               Iniciar sesión
             </Text>
@@ -74,10 +105,12 @@ export default function RegisterPage() {
             href="/(auth)/auth/login"
             className="font-semibold text-center text-g-gray-1"
           >
-            ¿No tienes una cuenta? Regístrate
+            ¿Ya tienes una cuenta? Inicia sesión
           </Link>
         </View>
       </KeyboardAwareScrollView>
+
+      <Load visible={isLoadingRegister} />
     </SafeAreaView>
   );
 }

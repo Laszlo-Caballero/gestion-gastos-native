@@ -1,8 +1,11 @@
 import { z } from "zod";
 export const loginSchema = z.object({
-  email: z.email({
-    message: "El correo electrónico no es válido",
-  }),
+  username: z
+    .string({
+      error: "El nombre de usuario es obligatorio",
+    })
+    .min(2)
+    .max(100),
   password: z
     .string({
       error: "La contraseña es obligatoria",
